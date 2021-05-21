@@ -1,7 +1,7 @@
 
 from emora_stdm.state_transition_dialogue_manager.dialogue_flow \
     import DialogueFlow, module_source_target, module_state
-from emora_stdm.state_transition_dialogue_manager.macros_common import *
+# from emora_stdm.state_transition_dialogue_manager.macros_common import *
 from emora_stdm.state_transition_dialogue_manager.utilities import \
     json_serialize_flexible, json_deserialize_flexible
 from emora_stdm.state_transition_dialogue_manager.dialogue_flow import \

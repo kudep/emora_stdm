@@ -1,5 +1,6 @@
 
 from enum import Enum, auto
+from collections import defaultdict 
 from emora_stdm.state_transition_dialogue_manager.memory import Memory
 from emora_stdm.state_transition_dialogue_manager.natex_nlu import NatexNLU
 from emora_stdm.state_transition_dialogue_manager.natex_nlg import NatexNLG
@@ -13,8 +14,8 @@ from emora_stdm.state_transition_dialogue_manager.stochastic_options import Stoc
 from emora_stdm.state_transition_dialogue_manager.utilities import HashableDict
 from emora_stdm.state_transition_dialogue_manager.macro import Macro
 from emora_stdm.state_transition_dialogue_manager.knowledge_base import KnowledgeBase
-from emora_stdm.state_transition_dialogue_manager.macros_common import *
-from emora_stdm.state_transition_dialogue_manager.natex_common import natex_macros_common
+# from emora_stdm.state_transition_dialogue_manager.macros_common import *
+# from emora_stdm.state_transition_dialogue_manager.natex_common import natex_macros_common
 from emora_stdm.state_transition_dialogue_manager.state import State
 from emora_stdm.state_transition_dialogue_manager.update_rules import UpdateRules
 from emora_stdm.state_transition_dialogue_manager.utilities import random_max, get_rmapping
@@ -104,34 +105,34 @@ class DialogueFlow:
                 self._kb.load_json_file(filename)
         else:
             self._kb = kb
-        onte = ONTE(self._kb)
-        kbe = KBE(self._kb)
-        goal_exit_macro = GoalExit(self)
+        # onte = ONTE(self._kb)
+        # kbe = KBE(self._kb)
+        # goal_exit_macro = GoalExit(self)
         self._macros = {
-            'WN': WN(wordnet),
-            'ONT': onte, 'ONTE': onte,
-            'ONTUL': ONTUL(self._kb),
-            'KBQ': kbe, 'KBE': kbe,
-            'ONTN': ONTN(self._kb),
-            'EXP': EXP(self._kb),
-            'ONT_NEG': ONT_NEG(self._kb),
-            'FPP': FirstPersonPronoun(self._kb),
-            'TPP': ThirdPersonPronoun(self._kb),
-            'PSP': PossessivePronoun(self._kb),
-            'GATE': Gate(self),
-            'TRANSITION': Transition(self),
-            'GOAL': GoalPursuit(goal_exit_macro, self),
-            'GCOM': GoalCompletion(self),
-            'GEXT': goal_exit_macro,
-            'GSRET': SetGoalReturnPoint(),
-            'GRET': GoalReturn(self),
-            'GCLR': ClearGoalStack(),
-            'VT': VirtualTransitions(self),
-            'CE': CanEnter(self),
-            'EXTR': ExtractList(self._kb)
+            # 'WN': WN(wordnet),
+            # 'ONT': onte, 'ONTE': onte,
+            # 'ONTUL': ONTUL(self._kb),
+            # 'KBQ': kbe, 'KBE': kbe,
+            # 'ONTN': ONTN(self._kb),
+            # 'EXP': EXP(self._kb),
+            # 'ONT_NEG': ONT_NEG(self._kb),
+            # 'FPP': FirstPersonPronoun(self._kb),
+            # 'TPP': ThirdPersonPronoun(self._kb),
+            # 'PSP': PossessivePronoun(self._kb),
+            # 'GATE': Gate(self),
+            # 'TRANSITION': Transition(self),
+            # 'GOAL': GoalPursuit(goal_exit_macro, self),
+            # 'GCOM': GoalCompletion(self),
+            # 'GEXT': goal_exit_macro,
+            # 'GSRET': SetGoalReturnPoint(),
+            # 'GRET': GoalReturn(self),
+            # 'GCLR': ClearGoalStack(),
+            # 'VT': VirtualTransitions(self),
+            # 'CE': CanEnter(self),
+            # 'EXTR': ExtractList(self._kb)
         }
-        self._macros.update(macros_common_dict)
-        self._macros.update(natex_macros_common)
+        # self._macros.update(macros_common_dict)
+        # self._macros.update(natex_macros_common)
         if macros:
             self._macros.update(macros)
         self._rules = UpdateRules(vars=self._vars, macros=self._macros)

@@ -122,10 +122,11 @@ class KnowledgeBase(Graph):
 
     def load_json(self, d, lemmatize=False):
         if 'ontology' in d:
-            if lemmatize:
-                ontology = lemmatize_ontology(d['ontology'])
-            else:
-                ontology = d['ontology']
+            # if lemmatize:
+            #     ontology = lemmatize_ontology(d['ontology'])
+            # else:
+            #     ontology = d['ontology']
+            ontology = d['ontology']
             for k, l in ontology.items():
                 for e in l:
                     self.add_type(e, k)

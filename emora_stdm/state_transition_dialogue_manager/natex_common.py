@@ -3,7 +3,7 @@ from emora_stdm.state_transition_dialogue_manager.macro import Macro
 from typing import Union, Set, List, Dict, Callable, Tuple, NoReturn, Any
 from emora_stdm.state_transition_dialogue_manager.ngrams import Ngrams
 from emora_stdm.state_transition_dialogue_manager.natex_nlu import NatexNLU
-from emora_stdm.state_transition_dialogue_manager import macros_common as mc
+# from emora_stdm.state_transition_dialogue_manager import macros_common as mc
 import random
 
 def CommonNatexMacro(natex_string):
@@ -11,7 +11,7 @@ def CommonNatexMacro(natex_string):
 
         def __init__(self, macro_dependencies=None):
             if macro_dependencies is None: macro_dependencies = {}
-            self.natex = NatexNLU(natex_string, macros={**mc.macros_common_dict, **macro_dependencies})
+            self.natex = NatexNLU(natex_string, macros={**macro_dependencies})
             self.natex.compile()
             self.natex._regex = self.natex.regex().replace("_END_", "").strip()
 
@@ -24,7 +24,7 @@ def NatexMacro(natex_string):
 
         def __init__(self, macro_dependencies=None):
             if macro_dependencies is None: macro_dependencies = {}
-            self.natex = NatexNLU(natex_string, macros={**mc.macros_common_dict, **macro_dependencies})
+            self.natex = NatexNLU(natex_string, macros={**macro_dependencies})
             self.natex.precache()
 
         def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):

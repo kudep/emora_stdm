@@ -16,10 +16,10 @@ setuptools.setup(
          "structpy==0.3",
          "lark-parser",
          "regex",
-         "nltk",
+        #  "nltk",
          "importlib_resources",
          "pytz",
-         "spacy",
+        #  "spacy",
          "dill",
          "pathos"
      ],
