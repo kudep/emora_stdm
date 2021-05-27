@@ -1,9 +1,7 @@
-
 import random
 
 
 class StochasticOptions(dict):
-
     def __init__(self, options):
         if isinstance(options, dict):
             dict.__init__(self, options)
@@ -27,5 +25,3 @@ class StochasticOptions(dict):
             if r < threshold:
                 return options[i]
         return options[-1]
-
-

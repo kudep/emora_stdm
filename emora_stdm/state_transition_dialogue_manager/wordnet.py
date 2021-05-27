@@ -1,19 +1,25 @@
 import sys
-from time import time
+
+# from time import time
 import nltk
+
 try:
-    nltk.data.find('wordnet')
-except:
-    nltk.download('wordnet')
+    nltk.data.find("wordnet")
+except Exception:
+    nltk.download("wordnet")
 
 from nltk.corpus import wordnet as wn
-import os
+
+# import os
 from emora_stdm.state_transition_dialogue_manager.knowledge_base import KnowledgeBase
+
+# import importlib_resources as impr
+
+# from . import data
 
 wordnet_knowledge_base = KnowledgeBase()
 
-import importlib_resources as impr
-from . import data
+
 try:
     pass
     # t1 = time()
@@ -22,7 +28,8 @@ try:
     # wordnet_knowledge_base.load_json_string(json_str)
     # sys.stderr.write(' done in {}s'.format(time() - t1))
 except FileNotFoundError:
-    sys.stderr.write(' failed to load.')
+    sys.stderr.write(" failed to load.")
+
 
 def related_synsets(word):
     """
@@ -37,14 +44,17 @@ def related_synsets(word):
             related.add(derivation.synset())
     return related
 
+
 def lemmas_of(synset):
-    return {x.name().replace('_', ' ').lower() for x in synset.lemmas()}
+    return {x.name().replace("_", " ").lower() for x in synset.lemmas()}
+
 
 def synonyms(word):
-    l = set()
+    lems = set()
     for syn in wn.synsets(word):
-        l.update(lemmas_of(syn))
-    return l
+        lems.update(lemmas_of(syn))
+    return lems
+
 
 def _hyponyms(synset):
     hypos = synset.hyponyms()
@@ -56,11 +66,12 @@ def _hyponyms(synset):
     else:
         return hypos
 
+
 def hyponyms(word):
-    l = set()
+    lems = set()
     for syn in wn.synsets(word):
-        l.update(lemmas_of(syn))
+        lems.update(lemmas_of(syn))
         hypo_syns = _hyponyms(syn)
         for hypo_syn in hypo_syns:
-            l.update(lemmas_of(hypo_syn))
-    return l
+            lems.update(lemmas_of(hypo_syn))
+    return lems

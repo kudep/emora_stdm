@@ -1,6 +1,4 @@
-
 class Settings(dict):
-
     def __init__(self, **kwargs):
         dict.__init__(self, kwargs)
 
@@ -19,7 +17,7 @@ class Settings(dict):
         dict.__setitem__(self, key, value)
 
     def __str__(self):
-        return 'Settings(' + ', '.join([k + '=' + str(v) for k, v in self.items()]) + ')'
+        return "Settings(" + ", ".join([k + "=" + str(v) for k, v in self.items()]) + ")"
 
     def __repr__(self):
         return str(self)

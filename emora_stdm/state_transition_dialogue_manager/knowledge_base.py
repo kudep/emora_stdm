@@ -1,19 +1,19 @@
-
 from emora_stdm.state_transition_dialogue_manager.database import GraphDatabase as Graph
 from structpy.graph.traversal import preset as traversal
-from emora_stdm.state_transition_dialogue_manager.utilities import lemmatize_ontology
+
+# from emora_stdm.state_transition_dialogue_manager.utilities import lemmatize_ontology
 import json
 from collections import defaultdict
 import regex
 
-_type = 'type'
-_attr = 'attr'
-_expr = 'expr'
+_type = "type"
+_attr = "attr"
+_expr = "expr"
 
-_expr_regex = r'[a-z A-Z0-9,]+'
+_expr_regex = r"[a-z A-Z0-9,]+"
+
 
 class KnowledgeBase(Graph):
-
     def __init__(self, arcs=None):
         Graph.__init__(self)
         if arcs is not None:
@@ -30,10 +30,10 @@ class KnowledgeBase(Graph):
             if not isinstance(relation_set, set):
                 relation_set = {relation_set}
             for relation in relation_set:
-                if relation == '*':
+                if relation == "*":
                     for n in result_set:
                         new_result_set.update({x[1] for x in self.arcs_out(n)})
-                elif relation[0] == '~':
+                elif relation[0] == "~":
                     relation = relation[1:]
                     for n in result_set:
                         if self.has_arc_label(n, relation):
@@ -108,8 +108,11 @@ class KnowledgeBase(Graph):
                 expression_arcs[s].append(o)
             else:
                 relation_arcs.append([s, r, o])
-        return json.dumps({'ontology': ontology_arcs, 'predicates': relation_arcs,
-                           'expressions': expression_arcs}, indent=4, sort_keys=True)
+        return json.dumps(
+            {"ontology": ontology_arcs, "predicates": relation_arcs, "expressions": expression_arcs},
+            indent=4,
+            sort_keys=True,
+        )
 
     def load_json_file(self, json_file, lemmatize=False):
         f = open(json_file, "r")
@@ -121,22 +124,22 @@ class KnowledgeBase(Graph):
         self.load_json(d, lemmatize)
 
     def load_json(self, d, lemmatize=False):
-        if 'ontology' in d:
+        if "ontology" in d:
             # if lemmatize:
             #     ontology = lemmatize_ontology(d['ontology'])
             # else:
             #     ontology = d['ontology']
-            ontology = d['ontology']
+            ontology = d["ontology"]
             for k, l in ontology.items():
                 for e in l:
                     self.add_type(e, k)
-        if 'predicates' in d:
-            relations = d['predicates']
+        if "predicates" in d:
+            relations = d["predicates"]
             for relation in relations:
                 s, r, o = tuple(relation)
                 self.add_relation(s, r, o)
-        if 'expressions' in d:
-            expressions = d['expressions']
+        if "expressions" in d:
+            expressions = d["expressions"]
             for n, l in expressions.items():
                 for e in l:
                     self.add_expression(n, e)

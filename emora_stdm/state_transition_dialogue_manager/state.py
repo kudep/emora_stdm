@@ -1,9 +1,7 @@
-
 from enum import Enum
 
 
 class State(str):
-
     def __new__(cls, other):
         if isinstance(other, tuple):
             return tuple(super(State, cls).__new__(cls, x) for x in other)
@@ -18,4 +16,3 @@ class State(str):
 
     def __hash__(self):
         return str.__hash__(self)
-

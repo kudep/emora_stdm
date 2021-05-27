@@ -1,16 +1,15 @@
-
-import regex
+# import regex
 from emora_stdm.state_transition_dialogue_manager.natex_nlu import NatexNLU
 from emora_stdm.state_transition_dialogue_manager.natex_nlg import NatexNLG
 
-class UpdateRule:
 
-    def __init__(self, precondition, postcondition='', vars=None, macros=None):
+class UpdateRule:
+    def __init__(self, precondition, postcondition="", vars=None, macros=None):
         self.precondition = None
         self.precondition_score = 1.0
         self.postcondition = None
         self.postcondition_score = None
-        self.is_repeating = len(precondition) > 0 and precondition[0] == '*'
+        self.is_repeating = len(precondition) > 0 and precondition[0] == "*"
         if self.is_repeating:
             precondition = precondition[1:]
         if macros is None:
@@ -35,12 +34,12 @@ class UpdateRule:
         self.postcondition_score = score
 
     def _natex_string_score(self, natex_string):
-        i = natex_string.rfind(' (')
+        i = natex_string.rfind(" (")
         if i != -1:
-            for c in natex_string[i + len(' ('):-1]:
-                if c not in set('0123456789.'):
+            for c in natex_string[i + len(" (") : -1]:
+                if c not in set("0123456789."):
                     return natex_string, None
-            return natex_string[:i], float(natex_string[i + len(' ('):-1])
+            return natex_string[:i], float(natex_string[i + len(" (") : -1])
         return natex_string, None
 
     def satisfied(self, user_input, vars, debugging=False):
@@ -50,15 +49,13 @@ class UpdateRule:
         if self.postcondition is not None:
             return self.postcondition.generate(vars=vars, debugging=debugging)
         else:
-            return ''
+            return ""
 
     def set_vars(self, vars):
         self.vars = vars
 
     def __str__(self):
-        return '{} ==> {}'.format(self.precondition, self.postcondition)
+        return "{} ==> {}".format(self.precondition, self.postcondition)
 
     def __repr__(self):
         return str(self)
-
-

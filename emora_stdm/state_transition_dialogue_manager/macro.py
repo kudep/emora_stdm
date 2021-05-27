@@ -1,11 +1,9 @@
-
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod  # , abstractproperty
 from emora_stdm.state_transition_dialogue_manager.ngrams import Ngrams
-from typing import Union, Set, List, Dict, Callable, Tuple, NoReturn, Any
+from typing import List, Dict, Any  #  , Union, Set, Callable, Tuple, NoReturn
 
 
 class Macro(ABC):
-
     @abstractmethod
     def run(self, ngrams: Ngrams, vars: Dict[str, Any], args: List[Any]):
         """
@@ -30,4 +28,3 @@ class Macro(ABC):
 
     def __call__(self, *args, **kwargs):
         return self.run(*args, **kwargs)
-

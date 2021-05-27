@@ -1,8 +1,7 @@
-
 from structpy.graph.labeled_digraph import MapMultidigraph
 
-class GraphDatabase(MapMultidigraph):
 
+class GraphDatabase(MapMultidigraph):
     def __init__(self, arcs=None):
         MapMultidigraph.__init__(self)
         self._node_data = {n: {} for n in self.nodes()}
@@ -40,7 +39,7 @@ class GraphDatabase(MapMultidigraph):
 
     def update(self, other):
         MapMultidigraph.update(self, other)
-        if hasattr(other, '_node_data'):
+        if hasattr(other, "_node_data"):
             self._node_data.update(other._node_data)
-            if hasattr(other, '_arc_data'):
+            if hasattr(other, "_arc_data"):
                 self._arc_data.update(other._arc_data)

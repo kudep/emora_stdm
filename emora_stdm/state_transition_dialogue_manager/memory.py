@@ -1,9 +1,7 @@
-
 from collections import deque
 
 
 class Memory:
-
     def __init__(self, n_OR_collection):
         if isinstance(n_OR_collection, int):
             self._data = deque([None] * n_OR_collection)
@@ -34,4 +32,4 @@ class Memory:
         self._data[key] = value
 
     def __str__(self):
-        return 'Memory({})'.format(', '.join(self._data))
+        return "Memory({})".format(", ".join(self._data))

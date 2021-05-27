@@ -1,4 +1,5 @@
-import os
+# import os
+
 # import nltk
 # try:
 #     nltk.data.find('wordnet')
@@ -6,9 +7,9 @@ import os
 #     nltk.download('wordnet')
 
 # from nltk.corpus import wordnet as wn
-import emora_stdm.state_transition_dialogue_manager.wordnet as stdmwn
-from emora_stdm.state_transition_dialogue_manager.knowledge_base import KnowledgeBase
-from structpy.collection import Multibidict
+# import emora_stdm.state_transition_dialogue_manager.wordnet as stdmwn
+# from emora_stdm.state_transition_dialogue_manager.knowledge_base import KnowledgeBase
+# from structpy.collection import Multibidict
 
 
 # if __name__ == '__main__':

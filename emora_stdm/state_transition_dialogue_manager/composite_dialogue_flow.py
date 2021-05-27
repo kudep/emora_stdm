@@ -1,37 +1,43 @@
-
 from collections import defaultdict
-from emora_stdm.state_transition_dialogue_manager.dialogue_flow \
-    import DialogueFlow, module_source_target, module_state
+import sys
+from emora_stdm.state_transition_dialogue_manager.dialogue_flow import DialogueFlow, module_source_target, module_state
+
 # from emora_stdm.state_transition_dialogue_manager.macros_common import *
-from emora_stdm.state_transition_dialogue_manager.utilities import \
-    json_serialize_flexible, json_deserialize_flexible
-from emora_stdm.state_transition_dialogue_manager.dialogue_flow import \
-    speaker_enum_mapping, speaker_enum_rmapping
+from emora_stdm.state_transition_dialogue_manager.utilities import json_serialize_flexible, json_deserialize_flexible
+from emora_stdm.state_transition_dialogue_manager.dialogue_flow import speaker_enum_mapping, speaker_enum_rmapping
 from time import time
-import dill
-from pathos.multiprocessing import ProcessingPool as Pool
+# import dill
+# from pathos.multiprocessing import ProcessingPool as Pool
 import traceback
+
 
 def precache(transition_datas):
     for tran_datas in transition_datas:
-        tran_datas['natex'].precache()
-    parsed_trees = [x['natex']._compiler._parsed_tree for x in transition_datas]
+        tran_datas["natex"].precache()
+    parsed_trees = [x["natex"]._compiler._parsed_tree for x in transition_datas]
     return parsed_trees
 
-class CompositeDialogueFlow:
 
-    def __init__(self, initial_state, system_error_state, user_error_state,
-                 initial_speaker = DialogueFlow.Speaker.SYSTEM, macros=None, kb=None):
+class CompositeDialogueFlow:
+    def __init__(
+        self,
+        initial_state,
+        system_error_state,
+        user_error_state,
+        initial_speaker=DialogueFlow.Speaker.SYSTEM,
+        macros=None,
+        kb=None,
+    ):
         if isinstance(system_error_state, str):
-            system_error_state = ('SYSTEM', system_error_state)
+            system_error_state = ("SYSTEM", system_error_state)
         if isinstance(user_error_state, str):
-            user_error_state = ('SYSTEM', user_error_state)
+            user_error_state = ("SYSTEM", user_error_state)
         # the dialogue flow currently controlling the conversation
         self._controller = DialogueFlow(initial_state, initial_speaker, macros, kb)
-        self._controller_name = 'SYSTEM'
+        self._controller_name = "SYSTEM"
         # namespace : dialogue flow mapping
         self._components = {}
-        self.add_component(self._controller, 'SYSTEM')
+        self.add_component(self._controller, "SYSTEM")
         self._system_error_state = system_error_state
         self._user_error_state = user_error_state
 
@@ -45,14 +51,14 @@ class CompositeDialogueFlow:
                 t1 = time()
                 response = self.system_turn(debugging=debugging)
                 if debugging:
-                    print('System turn in {:5}'.format(time() - t1))
+                    print("System turn in {:5}".format(time() - t1))
                 print("S:", response)
             else:
                 user_input = input("U: ")
                 t1 = time()
                 self.user_turn(user_input, debugging=debugging)
                 if debugging:
-                    print('User turn in {:5}'.format(time() - t1))
+                    print("User turn in {:5}".format(time() - t1))
 
     def system_turn(self, debugging=False):
         """
@@ -61,17 +67,25 @@ class CompositeDialogueFlow:
         :return: the natural language system response
         """
         visited = {self._controller.state()}
-        self.controller().vars()['__goal_return_state__'] = 'None'
+        self.controller().vars()["__goal_return_state__"] = "None"
         responses = []
         while self.controller().speaker() is DialogueFlow.Speaker.SYSTEM:
             try:
-                response, next_state = self.controller().system_transition(self.controller().state(), debugging=debugging)
+                response, next_state = self.controller().system_transition(
+                    self.controller().state(), debugging=debugging
+                )
                 assert next_state is not None
                 self.controller().set_state(next_state)
             except Exception as e:
-                print('Error in CompositeDialogueFlow. Component: {}  State: {}'.format(self.controller_name(), self.controller().state()))
+                print()
+                print(e)
+                print(
+                    "Error in CompositeDialogueFlow. Component: {}  State: {}".format(
+                        self.controller_name(), self.controller().state()
+                    )
+                )
                 traceback.print_exc(file=sys.stdout)
-                response, next_state = '', self._system_error_state
+                response, next_state = "", self._system_error_state
                 visited = visited - {next_state}
             if isinstance(next_state, tuple):
                 self.set_control(*next_state)
@@ -79,8 +93,8 @@ class CompositeDialogueFlow:
             if next_state in visited or not self.state_settings(*self.state()).system_multi_hop:
                 self.controller().set_speaker(DialogueFlow.Speaker.USER)
             visited.add(next_state)
-        full_response = ' '.join(responses)
-        self.controller().vars()['__selected_response__'] = full_response
+        full_response = " ".join(responses)
+        self.controller().vars()["__selected_response__"] = full_response
         return full_response
 
     def user_turn(self, natural_language, debugging=False):
@@ -91,22 +105,36 @@ class CompositeDialogueFlow:
         :param debugging:
         :return: None
         """
-        self.controller().vars()['__user_utterance__'] = natural_language
+        self.controller().vars()["__user_utterance__"] = natural_language
         try:
             self.controller().apply_update_rules(natural_language, debugging=debugging)
             next_state = self.controller().state()
         except Exception as e:
-            print('Error in CompositeDialogueFlow. Component: {}  State: {}'.format(self._controller_name, self.controller().state()))
+            print()
+            print(e)
+            print(
+                "Error in CompositeDialogueFlow. Component: {}  State: {}".format(
+                    self._controller_name, self.controller().state()
+                )
+            )
             traceback.print_exc(file=sys.stdout)
             next_state = self._user_error_state
         visited = {self.controller().state()}
         while self.controller().speaker() is DialogueFlow.Speaker.USER:
             try:
-                next_state = self.controller().user_transition(natural_language, self.controller().state(), debugging=debugging)
+                next_state = self.controller().user_transition(
+                    natural_language, self.controller().state(), debugging=debugging
+                )
                 assert next_state is not None
                 self.controller().set_state(next_state)
             except Exception as e:
-                print('Error in CompositeDialogueFlow. Component: {}  State: {}'.format(self._controller_name, self.controller().state()))
+                print()
+                print(e)
+                print(
+                    "Error in CompositeDialogueFlow. Component: {}  State: {}".format(
+                        self._controller_name, self.controller().state()
+                    )
+                )
                 traceback.print_exc(file=sys.stdout)
                 next_state = self._user_error_state
             next_state = module_state(next_state)
@@ -122,7 +150,6 @@ class CompositeDialogueFlow:
             self.set_control(*next_state)
             if self.controller().speaker() is DialogueFlow.Speaker.USER:
                 self.controller().apply_update_rules(natural_language, debugging=debugging)
-
 
     def set_control(self, namespace, state):
         state = module_state(state)
@@ -149,10 +176,10 @@ class CompositeDialogueFlow:
         transition_data_sets = []
         for i in range(process_num):
             transition_data_sets.append([])
-        count = 0
+        # count = 0
 
         if process_num == 1:
-            for name,df in self._components.items():
+            for name, df in self._components.items():
                 df.precache_transitions(process_num)
         else:
             # for name,df in self._components.items():
@@ -179,7 +206,7 @@ class CompositeDialogueFlow:
         if isinstance(state, tuple):
             ns, state = state
         else:
-            ns = 'SYSTEM'
+            ns = "SYSTEM"
         self._components[ns].add_state(state, error_successor)
 
     def add_user_transition(self, source, target, natex_nlu, **settings):
@@ -187,7 +214,7 @@ class CompositeDialogueFlow:
         if isinstance(source, tuple):
             ns, source = source
         else:
-            ns = 'SYSTEM'
+            ns = "SYSTEM"
         self._components[ns].add_user_transition(source, target, natex_nlu, **settings)
 
     def add_system_transition(self, source, target, natex_nlg, **settings):
@@ -195,14 +222,14 @@ class CompositeDialogueFlow:
         if isinstance(source, tuple):
             ns, source = source
         else:
-            ns = 'SYSTEM'
+            ns = "SYSTEM"
         self._components[ns].add_system_transition(source, target, natex_nlg, **settings)
 
     def add_component(self, component, namespace):
         self._components[namespace] = component
         component.set_is_module(self)
         component.set_namespace(namespace)
-        component.set_gates(self.component('SYSTEM').gates())
+        component.set_gates(self.component("SYSTEM").gates())
 
     def component(self, namespace):
         return self._components[namespace]
@@ -222,7 +249,7 @@ class CompositeDialogueFlow:
     def set_controller(self, controller_name):
         old_controller_vars = self._controller.vars()
         if self._controller_name != controller_name:
-            del old_controller_vars['__state__']
+            del old_controller_vars["__state__"]
         self._controller = self.component(controller_name)
         self._controller_name = controller_name
         new_controller_vars = self._controller.vars()
@@ -269,17 +296,15 @@ class CompositeDialogueFlow:
         Returns json serialized dict of
             {'vars': vars, 'gates': gates, 'state': state}
         """
-        config = {'vars': self._controller.vars(),
-                 'gates': self._controller.gates(),
-                 'state': self.state()}
+        config = {"vars": self._controller.vars(), "gates": self._controller.gates(), "state": self.state()}
         return json_serialize_flexible(config, speaker_enum_mapping)
 
     def deserialize(self, config_str):
         config = json_deserialize_flexible(config_str, speaker_enum_rmapping)
         self.reset()
-        self.set_state(config['state'])
-        self.set_vars(config['vars'])
-        gates = defaultdict(list, config['gates'])
+        self.set_state(config["state"])
+        self.set_vars(config["vars"])
+        gates = defaultdict(list, config["gates"])
         for name, component in self._components.items():
             component.set_gates(gates)
 
